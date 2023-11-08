@@ -6,40 +6,38 @@ public class ConsultantRepository : IConsultantRepository
 {
     private readonly GisysDbContext _gisysDbContext;
 
-    public ConsultantRepository(
-        GisysDbContext gisysDbContext
-    )
+    public ConsultantRepository(GisysDbContext gisysDbContext)
     {
         _gisysDbContext = gisysDbContext;
     }
 
-    /// <inheritdoc/>
     public void Add(Consultant consultant)
     {
-        throw new NotImplementedException();
+        _gisysDbContext.Consultants.Add(consultant);
+        _gisysDbContext.SaveChanges();
     }
 
-    /// <inheritdoc/>
     public IEnumerable<Consultant> Get()
     {
         return _gisysDbContext.Consultants.ToList();
     }
-
-    /// <inheritdoc/>
-    public Consultant GetById(int id)
+    public Consultant? GetById(int id)
     {
-        throw new NotImplementedException();
+        return _gisysDbContext.Consultants.FirstOrDefault(c => c.Id == id);
     }
-
-    /// <inheritdoc/>
     public void Remove(int id)
     {
-        throw new NotImplementedException();
+        var consultant = _gisysDbContext.Consultants.Find(id);
+        if (consultant != null)
+        {
+            _gisysDbContext.Consultants.Remove(consultant);
+            _gisysDbContext.SaveChanges();
+        }
     }
-
-    /// <inheritdoc/>
     public void Update(Consultant consultant)
     {
-        throw new NotImplementedException();
+        // Assuming that consultant is already being tracked by the _gisysDbContext
+        _gisysDbContext.SaveChanges();
     }
+
 }

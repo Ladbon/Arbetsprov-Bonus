@@ -9,13 +9,18 @@ public class GisysDbContext : DbContext
     {
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    // Define the Consultant entity's key and property configurations
+    modelBuilder.Entity<Consultant>(entity =>
     {
-        // Starting consultants
-        modelBuilder.Entity<Consultant>().HasKey(c => c.Id);
-
-        modelBuilder.Entity<Consultant>().Property(c => c.Id).ValueGeneratedOnAdd();
-    }
+        entity.HasKey(c => c.Id);
+        entity.Property(c => c.Id).ValueGeneratedOnAdd();
+        entity.Property(c => c.FirstName).IsRequired().HasMaxLength(50);
+        entity.Property(c => c.LastName).IsRequired().HasMaxLength(50);
+        entity.Property(c => c.StartDate).IsRequired();
+    });
+}
 
     public DbSet<Consultant> Consultants => Set<Consultant>();
 }

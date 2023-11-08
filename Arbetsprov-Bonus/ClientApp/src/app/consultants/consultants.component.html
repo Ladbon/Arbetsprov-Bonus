@@ -1,5 +1,15 @@
 <h1 id="tableLabel">Konsulter</h1>
 
+<div *ngIf="selectedConsultant" class="card">
+  <div class="card-body">
+    <h5 class="card-title">{{ selectedConsultant.firstName }} {{ selectedConsultant.lastName }}</h5>
+    <p class="card-text">ID: {{ selectedConsultant.id }}</p>
+    <p class="card-text">Anställningsdatum: {{ selectedConsultant.startDate | date: 'yyyy-MM-dd' }}</p>
+    <p class="card-text">Totala arbetstimmar: {{ selectedConsultant.totalHoursWorked }}</p>
+    <button class="btn btn-secondary" (click)="selectedConsultant = undefined">Stäng</button>
+  </div>
+</div>
+
 <p *ngIf="!consultants"><em>Loading...</em></p>
 
 <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="consultants">
@@ -14,12 +24,17 @@
   <tbody>
     <tr *ngFor="let consultant of consultants">
       <td>{{ consultant.id }}</td>
-      <td>{{ consultant.firstName }} {{ consultant.lastName }}</td>
-      <td>{{ consultant.startDate }}</td>
+      <td *ngIf="!editingConsultant || editingConsultant.id !== consultant.id">{{ consultant.firstName }} {{ consultant.lastName }}</td>
+      <td *ngIf="editingConsultant && editingConsultant.id === consultant.id">
+        <input [(ngModel)]="editingConsultant.firstName" />
+        <input [(ngModel)]="editingConsultant.lastName" />
+      </td>
+      <td>{{ consultant.startDate | date: 'yyyy-MM-dd' }}</td>
       <td>
-        <button class="btn-primary btn-sm">Visa</button> 
-        <button class="btn-warning btn-sm">Redigera</button> 
-        <button class="btn-danger btn-sm">Ta bort</button>
+        <button class="btn btn-primary btn-sm" (click)="viewConsultant(consultant)">Visa</button>
+        <button class="btn btn-warning btn-sm" *ngIf="!editingConsultant || editingConsultant.id !== consultant.id" (click)="editConsultant(consultant)">Redigera</button>
+        <button class="btn btn-success btn-sm" *ngIf="editingConsultant && editingConsultant.id === consultant.id" (click)="saveEdit(editingConsultant)">Spara</button>
+        <button class="btn btn-danger btn-sm" (click)="deleteConsultant(consultant.id)">Ta bort</button>
       </td>
     </tr>
   </tbody>

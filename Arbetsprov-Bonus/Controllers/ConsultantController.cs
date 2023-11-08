@@ -11,7 +11,7 @@ public class ConsultantController : ControllerBase
     private readonly IConsultantRepository _consultantRepository;
 
     public ConsultantController(
-        IConsultantRepository consultantRepository    
+        IConsultantRepository consultantRepository
     )
     {
         _consultantRepository = consultantRepository;
@@ -23,23 +23,54 @@ public class ConsultantController : ControllerBase
         return _consultantRepository.Get();
     }
 
-    //public Consultant GetById(long id)
-    //{
-    //    throw new NotImplementedException();
-    //}
+    [HttpGet("{id}")]
+    public ActionResult<Consultant> GetById(int id)
+    {
+        var consultant = _consultantRepository.GetById(id);
+        if (consultant is null)
+        {
+            return NotFound();
+        }
+        return consultant;
+    }
+    [HttpPost]
+    public ActionResult<Consultant> Add([FromBody] Consultant consultant)
+    {
+        _consultantRepository.Add(consultant);
+        return CreatedAtAction(nameof(GetById), new { id = consultant.Id }, consultant);
+    }
 
-    //public Consultant Add(string consultant)
-    //{
-    //    throw new NotImplementedException();
-    //}
+    [HttpDelete("{id}")]
+    public IActionResult Remove(int id)
+    {
+        var existingConsultant = _consultantRepository.GetById(id);
+        if (existingConsultant == null)
+        {
+            return NotFound();
+        }
+        _consultantRepository.Remove(id);
+        return NoContent();
+    }
 
-    //public Consultant Remove()
-    //{
-    //    throw new NotImplementedException();
-    //}
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, [FromBody] Consultant consultant)
+    {
+        if (id != consultant.Id)
+        {
+            return BadRequest();
+        }
 
-    //public Consultant Update(bool yes)
-    //{
-    //    throw new NotImplementedException();
-    //}
+        var existingConsultant = _consultantRepository.GetById(id);
+        if (existingConsultant == null)
+        {
+            return NotFound();
+        }
+
+        existingConsultant.FirstName = consultant.FirstName;
+        existingConsultant.LastName = consultant.LastName;
+        existingConsultant.StartDate = consultant.StartDate;
+
+        _consultantRepository.Update(existingConsultant);
+        return NoContent();
+    }
 }

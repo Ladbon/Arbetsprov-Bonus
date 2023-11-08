@@ -1,3 +1,31 @@
 <h1 id="tableLabel">Bonusberäkning</h1>
 
-<p></p>
+<label for="netResult">Ange företagets nettoresultat:</label>
+<input type="number" id="netResult" (input)="onNetResultChange($event)" placeholder="Nettoresultat" />
+
+<p *ngIf="!consultants"><em>Loading consultants...</em></p>
+<p *ngIf="!allFieldsFilled()"><em>Please enter the net result and debited hours for all consultants.</em></p>
+<p *ngIf="allFieldsFilled()">Total Bonus: {{ totalBonus | currency:'SEK':'symbol':'1.2-2' }}</p>
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="consultants && consultants.length">
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Namn</th>
+      <th>Loyaltypoints</th>
+      <th>Debiterade Timmar</th>
+      <th *ngIf="allFieldsFilled()">Bonus</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let consultant of consultants">
+      <td>{{ consultant.id }}</td>
+      <td>{{ consultant.firstName }} {{ consultant.lastName }}</td>
+      <td>{{ calculateLoyaltyFactor(consultant) }}</td>
+      <td>
+        <input type="number" [(ngModel)]="consultant.debitedHours" (input)="calculateBonuses()" />
+      </td>
+      <td *ngIf="allFieldsFilled()">{{ consultant.bonus | currency:'SEK':'symbol':'1.2-2' }}</td>
+    </tr>
+  </tbody>
+</table>
+
